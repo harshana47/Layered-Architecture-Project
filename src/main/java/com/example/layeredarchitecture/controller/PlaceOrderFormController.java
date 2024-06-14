@@ -2,7 +2,7 @@ package com.example.layeredarchitecture.controller;
 
 import com.example.layeredarchitecture.dao.CustomerDAOImpl;
 import com.example.layeredarchitecture.dao.ItemDAOImpl;
-import com.example.layeredarchitecture.dao.OrderDetailDAOImpl;
+import com.example.layeredarchitecture.dao.OrderlDAOImpl;
 import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
@@ -53,7 +53,7 @@ public class PlaceOrderFormController {
     public Label lblTotal;
     private String orderId;
 
-    OrderDetailDAOImpl orderDetailDAO = new OrderDetailDAOImpl();
+    OrderlDAOImpl orderDAO = new OrderlDAOImpl();
     ItemDAOImpl itemDAO = new ItemDAOImpl();
     CustomerDAOImpl customerDAO = new CustomerDAOImpl();
 
@@ -188,7 +188,7 @@ public class PlaceOrderFormController {
     public String generateNewOrderId() {
         try {
 
-            return orderDetailDAO.generateNextOrderID();
+            return orderDAO.generateNextOrderID();
 
 
         } catch (SQLException e) {

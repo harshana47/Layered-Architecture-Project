@@ -4,7 +4,7 @@ import com.example.layeredarchitecture.db.DBConnection;
 
 import java.sql.*;
 
-public class OrderDetailDAOImpl implements OrderDetailDAO{
+public class OrderlDAOImpl implements OrderDAO {
     @Override
     public String generateNextOrderID() throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
