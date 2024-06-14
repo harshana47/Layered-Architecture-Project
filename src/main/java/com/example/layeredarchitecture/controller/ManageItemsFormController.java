@@ -223,6 +223,7 @@ public class ManageItemsFormController {
 //                return "I00-001";
 //            }
             return impl.newId();
+
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         } catch (ClassNotFoundException e) {
