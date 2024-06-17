@@ -1,8 +1,7 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.dao.ItemDAOImpl;
-import com.example.layeredarchitecture.db.DBConnection;
-import com.example.layeredarchitecture.model.CustomerDTO;
+import com.example.layeredarchitecture.dao.custom.ItemDAO;
+import com.example.layeredarchitecture.dao.custom.impl.ItemDAOImpl;
 import com.example.layeredarchitecture.model.ItemDTO;
 import com.example.layeredarchitecture.view.tdm.ItemTM;
 import com.jfoenix.controls.JFXButton;
@@ -38,7 +37,7 @@ public class ManageItemsFormController {
     public TextField txtUnitPrice;
     public JFXButton btnAddNewItem;
 
-    ItemDAOImpl impl = new ItemDAOImpl();
+    ItemDAO itemDAO = new ItemDAOImpl();
 
     public void initialize() {
         tblItems.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -73,9 +72,10 @@ public class ManageItemsFormController {
     private void loadAllItems() {
         tblItems.getItems().clear();
         try {
-            ArrayList<ItemDTO> itemDTOS =impl.getAllItems();
-            for (ItemDTO itemDTO :itemDTOS) {
-                tblItems.getItems().add(new ItemTM(itemDTO.getCode(),itemDTO.getDescription(),itemDTO.getUnitPrice(),itemDTO.getQtyOnHand()));
+            /*Get all items*/
+            ArrayList<ItemDTO> allItems = itemDAO.getAll();
+            for (ItemDTO i : allItems) {
+                tblItems.getItems().add(new ItemTM(i.getCode(), i.getDescription(), i.getUnitPrice(), i.getQtyOnHand()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -132,8 +132,8 @@ public class ManageItemsFormController {
             if (!existItem(code)) {
                 new Alert(Alert.AlertType.ERROR, "There is no such item associated with the id " + code).show();
             }
-
-            impl.delete(code);
+            //Delete Customer
+            itemDAO.delete(code);
 
             tblItems.getItems().remove(tblItems.getSelectionModel().getSelectedItem());
             tblItems.getSelectionModel().clearSelection();
@@ -173,7 +173,7 @@ public class ManageItemsFormController {
                     new Alert(Alert.AlertType.ERROR, code + " already exists").show();
                 }
                 //Save Item
-                impl.save(code,description,qtyOnHand,unitPrice);
+                itemDAO.add(new ItemDTO(code, description, unitPrice, qtyOnHand));
                 tblItems.getItems().add(new ItemTM(code, description, unitPrice, qtyOnHand));
 
             } catch (SQLException e) {
@@ -188,8 +188,7 @@ public class ManageItemsFormController {
                     new Alert(Alert.AlertType.ERROR, "There is no such item associated with the id " + code).show();
                 }
                 /*Update Item*/
-
-                impl.update(description,unitPrice,qtyOnHand,code);
+                itemDAO.update(new ItemDTO(code, description, unitPrice, qtyOnHand));
 
                 ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
                 selectedItem.setDescription(description);
@@ -206,24 +205,15 @@ public class ManageItemsFormController {
         btnAddNewItem.fire();
     }
 
+
     private boolean existItem(String code) throws SQLException, ClassNotFoundException {
-       return impl.exist(code);
+        return itemDAO.exist(code);
     }
 
 
     private String generateNewId() {
         try {
-//            Connection connection = DBConnection.getDbConnection().getConnection();
-//            ResultSet rst = connection.createStatement().executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1;");
-//            if (rst.next()) {
-//                String id = rst.getString("code");
-//                int newItemId = Integer.parseInt(id.replace("I00-", "")) + 1;
-//                return String.format("I00-%03d", newItemId);
-//            } else {
-//                return "I00-001";
-//            }
-            return impl.newId();
-
+            return itemDAO.generateNewID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         } catch (ClassNotFoundException e) {

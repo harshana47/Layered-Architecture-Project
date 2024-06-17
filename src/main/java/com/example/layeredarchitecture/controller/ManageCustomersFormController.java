@@ -1,7 +1,8 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.dao.CustomerDAOImpl;
-import com.example.layeredarchitecture.db.DBConnection;
+import com.example.layeredarchitecture.bo.CustomerBoImpl;
+import com.example.layeredarchitecture.dao.custom.CustomerDAO;
+import com.example.layeredarchitecture.dao.custom.impl.CustomerDAOImpl;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.view.tdm.CustomerTM;
 import com.jfoenix.controls.JFXButton;
@@ -38,7 +39,8 @@ public class ManageCustomersFormController {
     public TableView<CustomerTM> tblCustomers;
     public JFXButton btnAddNewCustomer;
 
-    CustomerDAOImpl customerDAO=new CustomerDAOImpl();
+    //DI (Property Injection)
+    CustomerBoImpl customerBo = new CustomerBoImpl();
 
     public void initialize() {
         tblCustomers.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -71,11 +73,12 @@ public class ManageCustomersFormController {
         tblCustomers.getItems().clear();
         /*Get all customers*/
         try {
-            ArrayList<CustomerDTO> customerDTOS=customerDAO.getAllCustomer();
-
-            for (CustomerDTO customerDTO : customerDTOS) {
-                tblCustomers.getItems().add(new CustomerTM(customerDTO.getId(), customerDTO.getName(), customerDTO.getAddress()));
+            CustomerDAOImpl customerDAO=new CustomerDAOImpl();
+            ArrayList<CustomerDTO> customerDTOArrayList=customerDAO.getAll();
+            for (CustomerDTO customerDTO:customerDTOArrayList) {
+                tblCustomers.getItems().add(new CustomerTM(customerDTO.getId(), customerDTO.getName(),customerDTO.getAddress()));
             }
+
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         } catch (ClassNotFoundException e) {
@@ -98,8 +101,8 @@ public class ManageCustomersFormController {
     }
 
     @FXML
-    private void navigateToHome(MouseEvent event) throws IOException { //less BoilerPlate
-        URL resource = this.getClass().getResource("/com/example/layeredarchitecture/main-form.fxml");//tight coupling
+    private void navigateToHome(MouseEvent event) throws IOException {
+        URL resource = this.getClass().getResource("/com/example/layeredarchitecture/main-form.fxml");
         Parent root = FXMLLoader.load(resource);
         Scene scene = new Scene(root);
         Stage primaryStage = (Stage) (this.root.getScene().getWindow());
@@ -140,13 +143,12 @@ public class ManageCustomersFormController {
 
         if (btnSave.getText().equalsIgnoreCase("save")) {
             /*Save Customer*/
-            CustomerDTO customerDTO = null;
             try {
                 if (existCustomer(id)) {
                     new Alert(Alert.AlertType.ERROR, id + " already exists").show();
                 }
-                customerDAO.save(id,name,address);
 
+                customerBo.add(new CustomerDTO(id,name,address));
                 tblCustomers.getItems().add(new CustomerTM(id, name, address));
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to save the customer " + e.getMessage()).show();
@@ -161,14 +163,8 @@ public class ManageCustomersFormController {
                 if (!existCustomer(id)) {
                     new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
                 }
-                customerDAO.update(id,name,address);
-                //tblCustomers.getItems().add(new CustomerTM(id, name, address));
-               /* Connection connection = DBConnection.getDbConnection().getConnection();//less BoilerPlate
-                PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
-                pstm.setString(1, name);
-                pstm.setString(2, address);
-                pstm.setString(3, id);
-                pstm.executeUpdate();*/
+                //Update Customer
+                customerBo.update(new CustomerDTO(id,name,address));
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the customer " + id + e.getMessage()).show();
             } catch (ClassNotFoundException e) {
@@ -186,7 +182,7 @@ public class ManageCustomersFormController {
 
 
     boolean existCustomer(String id) throws SQLException, ClassNotFoundException {
-       return customerDAO.exist(id);
+        return customerBo.exist(id);
     }
 
 
@@ -197,11 +193,8 @@ public class ManageCustomersFormController {
             if (!existCustomer(id)) {
                 new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
             }
-//            Connection connection = DBConnection.getDbConnection().getConnection();//less BoilerPlate
-//            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
-//            pstm.setString(1, id);
-//            pstm.executeUpdate();
-            customerDAO.delete(id);
+            //Delete Customer
+            customerBo.delete(id);
 
             tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
             tblCustomers.getSelectionModel().clearSelection();
@@ -216,17 +209,8 @@ public class ManageCustomersFormController {
 
     private String generateNewId() {
         try {
-//            Connection connection = DBConnection.getDbConnection().getConnection();//less BoilerPlate
-//            ResultSet rst = connection.createStatement().executeQuery("SELECT id FROM Customer ORDER BY id DESC LIMIT 1;");
-//            if (rst.next()) {
-//                String id = rst.getString("id");
-//                int newCustomerId = Integer.parseInt(id.replace("C00-", "")) + 1;
-//                return String.format("C00-%03d", newCustomerId);
-//            } else {
-//                return "C00-001";
-//            }
-            return customerDAO.newId();
-
+            //Generate New ID
+            return customerBo.generateNewID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {
