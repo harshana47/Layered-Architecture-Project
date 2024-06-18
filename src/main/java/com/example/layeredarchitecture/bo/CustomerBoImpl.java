@@ -9,42 +9,37 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerBoImpl {
-    public ArrayList<CustomerDTO> getAllCustomers() throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.getAll();
+public class CustomerBoImpl implements CustomerBo{
+    CustomerDAO customerBo = new CustomerDAOImpl();
+
+    public ArrayList<CustomerDTO> getAll() throws SQLException, ClassNotFoundException {
+        return customerBo.getAll();
     }
 
     public boolean add(CustomerDTO dto) throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.add(dto);
+        return customerBo.add(dto);
     }
 
     public boolean update(CustomerDTO dto) throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.update(dto);
+        return customerBo.update(dto);
     }
 
     public boolean exist(String id) throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.exist(id);
+        return customerBo.exist(id);
     }
 
     public String generateNewID() throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.generateNewID();
+        return customerBo.generateNewID();
     }
 
 
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.delete(id);
+        return customerBo.delete(id);
     }
 
 
     public CustomerDTO search(String id) throws SQLException, ClassNotFoundException {
-        CustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.search(id);
+        return customerBo.search(id);
     }
 
 }

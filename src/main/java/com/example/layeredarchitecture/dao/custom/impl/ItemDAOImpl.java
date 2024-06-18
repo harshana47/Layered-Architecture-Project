@@ -2,6 +2,7 @@ package com.example.layeredarchitecture.dao.custom.impl;
 
 import com.example.layeredarchitecture.dao.SQLUtil;
 import com.example.layeredarchitecture.dao.custom.ItemDAO;
+import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.ItemDTO;
 
 import java.sql.*;
@@ -74,13 +75,13 @@ public class ItemDAOImpl implements ItemDAO {
     }
     @Override
     public String generateNewID() throws SQLException, ClassNotFoundException {
-        // Connection connection = DBConnection.getDbConnection().getConnection();
-        ResultSet rst = SQLUtil.execute("SELECT code FROM Item ORDER BY code DESC LIMIT 1;");
+        ResultSet rst = SQLUtil.execute("SELECT code FROM Item ORDER BY code DESC LIMIT 1;") ;
         if (rst.next()) {
-            return rst.getString("code");
-
+            String id = rst.getString("code");
+            int newItemId = Integer.parseInt(id.replace("I00-", "")) + 1;
+            return String.format("I00-%03d", newItemId);
         } else {
-            return null;
+            return "I00-001";
         }
     }
 
