@@ -1,5 +1,6 @@
-package com.example.layeredarchitecture.bo;
+package com.example.layeredarchitecture.bo.impl;
 
+import com.example.layeredarchitecture.bo.OrderDetailBo;
 import com.example.layeredarchitecture.dao.custom.OrderDAO;
 import com.example.layeredarchitecture.dao.custom.OrderDetailsDAO;
 import com.example.layeredarchitecture.dao.custom.impl.OrderDetailsDAOImpl;
@@ -8,7 +9,7 @@ import com.example.layeredarchitecture.model.OrderDetailDTO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class OrderDetailBoImpl implements OrderDetailBo{
+public class OrderDetailBoImpl implements OrderDetailBo {
 
     OrderDetailsDAO orderDetailBo = new OrderDetailsDAOImpl();
 

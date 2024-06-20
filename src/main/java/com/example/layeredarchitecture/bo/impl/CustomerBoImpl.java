@@ -1,5 +1,6 @@
-package com.example.layeredarchitecture.bo;
+package com.example.layeredarchitecture.bo.impl;
 
+import com.example.layeredarchitecture.bo.CustomerBo;
 import com.example.layeredarchitecture.dao.SQLUtil;
 import com.example.layeredarchitecture.dao.custom.CustomerDAO;
 import com.example.layeredarchitecture.dao.custom.impl.CustomerDAOImpl;
@@ -9,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerBoImpl implements CustomerBo{
+public class CustomerBoImpl implements CustomerBo {
     CustomerDAO customerBo = new CustomerDAOImpl();
 
     public ArrayList<CustomerDTO> getAll() throws SQLException, ClassNotFoundException {
